@@ -16,6 +16,7 @@ import time
 import traceback
 from datetime import datetime
 
+from . import families
 from . import config as _config_mod
 from .civitai import (
     fetch_civitai_collections,
