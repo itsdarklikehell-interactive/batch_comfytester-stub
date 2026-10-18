@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# pytest
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Runtime artifacts (this project)
+*.log
+*.env
+*.lock
+*.bak
+batch_state.json
+completed_models.txt
+failed_models.txt
+skip_ids.txt
+priority_ids.txt
+completed_datasets.txt
+batch_timing_report.json
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+# HuggingFace models to process in batch
+# Format: model_id|family|model_type|hf_repo|local_path|notes
+# model_type: CHECKPOINT, LORA, VAE, VIDEO
+# local_path: relative to COMFYUI_BASE/models/ (repo-relative path on the HF Hub)
+
+qwen_image_2_1|qwen_image|CHECKPOINT|Comfy-Org/Qwen-Image-2.1|diffusion_models/qwen_image_2.1_int8_convrot.safetensors|Qwen Image 2.1 INT8 - needs qwen3vl_8b text encoder + qwen_image_2.1_vae_bf16 VAE
+anima_turbo|anima|CHECKPOINT|circlestone-labs/Anima|split_files/diffusion_models/anima-aesthetic-v1.0.safetensors|Anima Turbo - aesthetic diffusion checkpoint (split_files layout)
+krea2_turbo|krea2|CHECKPOINT|krea/Krea-2-Turbo|checkpoints/turbo.safetensors|Krea 2 Turbo - HF repo accessible (gated; HF_TOKEN authorized). Main weights turbo.safetensors (~24.5 GB) exceed krea2 7.5 GB VRAM limit and this host's free disk (~19 GB): download + render deferred until headroom allows
+flux_klein_4b|flux_klein|CHECKPOINT|black-forest-labs/FLUX.2-klein-4B|checkpoints/flux-2-klein-4b.safetensors|FLUX.2 Klein 4B - apache-2.0, ~7.2 GB BF16 weights, dynamic offloading on RTX 3070
+wan22_i2v_14b|wan22_video|VIDEO|Comfy-Org/Wan_2.2_ComfyUI_Repackaged|diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors|Wan2.2 I2V 14B FP8-scaled - video generation

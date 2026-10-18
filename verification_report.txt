@@ -1,0 +1,47 @@
+Civitai + HF profile integration — end-to-end verification
+Task: ff25c0e8-9400-4c8b-8939-910e555e5ec5
+Workspace: /home/rizzo/Work/batch_comfytester
+Code under test: batch_comfytester.py (fetch_civitai_favorites, fetch_hf_liked_repos,
+resolve_hf_liked_entries/append_hf_entries, download_hf_dataset, resolve_hf_primary_file)
+
+---------------------------------------------------------------
+Test 1: fetch_civitai_favorites (Bearer auth) — PASS
+- Civitai token loaded from /home/rizzo/.civitai/comfy-api-key (32 bytes)
+- Authenticated GET https://civitai.com/api/v1/models?favorites=true returned HTTP 200
+  (bearer auth accepted; no 401)
+- Result: 0 favorite models — user has no Civitai favorites bookmarked
+
+Test 2: fetch_hf_liked_repos (HF_TOKEN) — PASS
+- HF_TOKEN loaded from batch_comfytester.env (real hf_ token, 37 chars)
+- huggingface_hub 1.24.0 installed; HfApi().list_liked_repos("SgtStroopwafel") succeeded
+  (no auth error logged)
+- Result: 0 liked models + 0 liked datasets + 0 liked spaces for user SgtStroopwafel
+
+Test 3: download_hf_dataset -> ComfyUI/models/datasets/ — PASS
+- snapshot_download(repo_id="stanfordnlp/sst2", repo_type="dataset",
+  local_dir=/home/rizzo/ComfyUI/models/datasets/stanfordnlp_sst2,
+  local_dir_use_symlinks=False) succeeded
+- 5 files landed: README.md, .gitattributes, data/train/validation/test parquet
+- Side effect: dataset dir now exists under ComfyUI/models/datasets/ (intended by test)
+
+Test 4: Verify hf_models.txt entries resolve and process — 3 of 5 resolved
+- hf_models.txt parses cleanly: 5 well-formed entries
+  (model_id|family|mtype|hf_repo|local_path|notes)
+- Resolved to a primary weights file via https://huggingface.co/api/models/{repo}:
+  * qwen_image_2_1  (Comfy-Org/Qwen-Image-2.1) -> diffusion_models/qwen_image_2.1_bf16.safetensors
+  * anima_turbo     (circlestone-labs/Anima)   -> split_files/diffusion_models/anima-aesthetic-v1.0.safetensors
+  * krea2_turbo     (krea/Krea-2-Turbo)         -> transformer/diffusion_pytorch_model-00001-of-00003.safetensors
+- NOT resolved (HTTP 404 — repo IDs do not exist on HF):
+  * flux_klein_4b   (black-forest-labs/FLUX.2)
+  * wan22_ti2v_5b   (Comfy-Org/Wan2.2)
+- Code behavior on unresolved entries: resolve_hf_primary_file returns None;
+  resolve_hf_liked_entries logs and skips; process_hf_models defers/marks failed.
+  These are data-quality issues in hf_models.txt (wrong/nonexistent repo IDs), not
+  code defects. All integration paths handle them gracefully.
+
+---------------------------------------------------------------
+Conclusion: Civitai bearer-auth endpoint, HF liked-repos fetch, and HF dataset download
+all work end-to-end. hf_models.txt is well-formed and 3/5 entries resolve; the 2
+unresolvable entries reference nonexistent HF repo IDs and are correctly skipped/deferred
+by the existing code. Recommended follow-up: correct or remove the FLUX.2 and Wan2.2
+entries in hf_models.txt.
