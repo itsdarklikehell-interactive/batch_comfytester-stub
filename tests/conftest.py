@@ -22,6 +22,7 @@ def config(tmp_path):
         civitai_api_base="https://civitai.example/api/v1",
         civitai_min_interval=0.01,
         civitai_max_retries=3,
+        civitai_skip_collections=False,  # hermetic tests mock the API; don't skip collections
         hf_datasets_dir=str(tmp_path / "hf" / "datasets"),
         state_file=str(tmp_path / "batch_state.json"),
         completed_file=str(tmp_path / "completed_models.txt"),

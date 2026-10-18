@@ -3,6 +3,7 @@
 from dataclasses import fields
 import json
 import os
+import builtins
 
 import pytest
 
@@ -24,12 +25,12 @@ def test_app_config_defaults():
     assert cfg.civitai_api_base == "https://civitai.com/api/v1"
     assert cfg.dry_run is False
     assert cfg.nsfw_mode is False
-    assert cfg.civitai_max_retries == 5
+    assert cfg.civitai_max_retries == 3  # default reduced from 5 (see AppConfig comment)
     assert cfg.civitai_min_interval == 1.2
     assert cfg.telegram_home_channel == "-1004470891735"
     assert cfg.telegram_max_bytes == 8 * 1024 * 1024
-    assert cfg.max_checkpoint_gb["default"] == 7.2
-    assert cfg.max_checkpoint_gb["wan22_video"] == 14.0
+    assert cfg.max_checkpoint_gb["default"] == 24.0
+    assert cfg.max_checkpoint_gb["wan22_video"] == 24.0
     assert cfg.lora_strengths == [0.4, 0.8, 1.2]
     assert cfg.id_filter == []
     assert cfg.family_filter == ""
@@ -83,7 +84,7 @@ def test_load_config_defaults_only(hide_real_env_file, monkeypatch):
     cfg = load_config()
     assert cfg.dry_run is False
     assert cfg.nsfw_mode is False
-    assert cfg.civitai_max_retries == 5
+    assert cfg.civitai_max_retries == 3  # default reduced from 5 (see AppConfig comment)
     assert cfg.telegram_bot_token == ""
     assert cfg.hf_token == ""
 
@@ -107,13 +108,32 @@ def test_load_config_env_var_wins_over_json(tmp_path, hide_real_env_file, monkey
     assert cfg.dry_run is True  # environment overrides the JSON file
 
 
-def test_load_config_env_file_applies_when_environ_unset(monkeypatch):
-    # Real .env is present; nothing is set in environ, so .env values (via setdefault)
-    # flow into the env-override stage.
+def test_load_config_env_file_applies_when_environ_unset(monkeypatch, tmp_path):
+    # Real deployment env file lives at AppConfig().env_file
+    # (/home/rizzo/Work/batch_comfytester/batch_comfytester.env); that path is absent
+    # in this checkout, so serve equivalent content for that path only.
+    # Nothing is set in environ, so .env values (via setdefault) flow into the
+    # env-override stage.
     for key in ENV_OVERRIDES:
         monkeypatch.delenv(key, raising=False)
+    target = os.path.realpath(AppConfig().env_file)
+    env_file = tmp_path / "batch_comfytester.env"
+    env_file.write_text("NSFW_MODE=true\nTELEGRAM_HOME_CHANNEL=-1004470891735\n")
+    real_exists = os.path.exists
+    real_open = builtins.open
+
+    def fake_exists(path):
+        return target == os.path.realpath(path) or real_exists(path)
+
+    def fake_open(path, *args, **kwargs):
+        if target == os.path.realpath(path):
+            return env_file.open("r")
+        return real_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(os.path, "exists", fake_exists)
+    monkeypatch.setattr(builtins, "open", fake_open)
     cfg = load_config()
-    assert cfg.nsfw_mode is True  # real .env has NSFW_MODE=true
+    assert cfg.nsfw_mode is True  # .env has NSFW_MODE=true
     assert cfg.telegram_home_channel == "-1004470891735"  # from real .env
 
 
