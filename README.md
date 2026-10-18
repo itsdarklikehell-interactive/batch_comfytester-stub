@@ -59,6 +59,18 @@ python3 batch_comfytester.py --combo
 
 # NSFW mode
 python3 batch_comfytester.py --nsfw --limit 5
+
+# Disable Telegram notifications
+python3 batch_comfytester.py --no-telegram --limit 5
+
+# Override ComfyUI base directory
+python3 batch_comfytester.py --comfyui-base /path/to/ComfyUI --limit 5
+
+# Filter by model family
+python3 batch_comfytester.py --family flux --limit 5
+
+# Process specific model IDs
+python3 batch_comfytester.py --ids 12345,67890
 ```
 
 Config precedence (low → high): dataclass defaults → JSON config file → `batch_comfytester.env` → environment variables → CLI arguments.
@@ -70,7 +82,7 @@ python3 -m py_compile comfytester/*.py batch_comfytester.py
 python3 -m pytest tests/ -q
 ```
 
-95 tests pass; 4 are pre-existing failures (Civitai API skip + `civitai_max_retries` config default) documented in `batch-comfytester-development` skill — not regressions.
+89 tests pass; 4 are pre-existing failures (Civitai API skip + `civitai_max_retries` config default) documented in `batch-comfytester-development` skill — not regressions. `test_telegram.py` requires PIL and is excluded from the headless run.
 
 ## License
 
