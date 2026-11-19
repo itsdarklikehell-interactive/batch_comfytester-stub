@@ -3,8 +3,12 @@ name: Gource visualization
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "gource.mp4"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "gource.mp4"
   workflow_dispatch:
 
 permissions:
@@ -13,6 +17,7 @@ permissions:
 
 jobs:
   gource:
+    if: ${{ github.event_name != 'push' || !startsWith(github.event.head_commit.message || '', 'chore: publish updated Gource video') }}
     uses: itsdarklikehell-interactive/ci-templates/.github/workflows/gource-reusable.yml@7063677573deee4a6d4c15533d3451225486f9ed
     permissions:
       contents: write
