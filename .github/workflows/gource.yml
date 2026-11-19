@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   gource:
-    uses: itsdarklikehell-interactive/ci-templates/.github/workflows/gource-reusable.yml@main
+    uses: itsdarklikehell-interactive/ci-templates/.github/workflows/gource-reusable.yml@5d44fcd97f6ea8cf05ae6f0298fe84ac56829cba
     permissions:
       contents: write
       actions: read
