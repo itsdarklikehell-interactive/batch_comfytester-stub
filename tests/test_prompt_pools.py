@@ -212,14 +212,9 @@ def test_get_family_dialect_mapping():
     assert get_family_dialect("unknown_family") == DIALECT_CLIP_TAG
 
 
-def test_real_pools_load_end_to_end():
-    """Sanity check against the actual ComfyUI prompt_pools directory."""
-    cfg = AppConfig(
-        comfyui_base="/home/rizzo/ComfyUI",
-        prompt_pools_dir="/home/rizzo/ComfyUI/prompt_pools",
-        model_family_map="/home/rizzo/ComfyUI/prompt_pools/model_family_map.json",
-        nsfw_mode=False,
-    )
+def test_real_pools_load_end_to_end(tmp_path):
+    """Sanity check prompt-pool loading in an isolated temporary directory."""
+    cfg = _make_config(tmp_path)
     families.init(cfg)
     load_prompt_pools(cfg)
     assert len(families.PROMPT_POOLS) == len(families.FAMILY_SETTINGS)

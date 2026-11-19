@@ -1,0 +1,20 @@
+name: Gource visualization
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  gource:
+    uses: itsdarklikehell-interactive/ci-templates/.github/workflows/gource-reusable.yml@7063677573deee4a6d4c15533d3451225486f9ed
+    permissions:
+      contents: write
+      actions: read
+      pull-requests: write
