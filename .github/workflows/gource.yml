@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - "gource.mp4"
+      - ".github/workflows/gource.yml"
   pull_request:
     branches: [main]
     paths-ignore:
@@ -17,7 +18,6 @@ permissions:
 
 jobs:
   gource:
-    if: ${{ github.event_name != 'push' || !startsWith(github.event.head_commit.message || '', 'chore: publish refreshed Gource video') }}
     uses: itsdarklikehell-interactive/ci-templates/.github/workflows/gource-reusable.yml@7063677573deee4a6d4c15533d3451225486f9ed
     permissions:
       contents: write
