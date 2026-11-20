@@ -3,8 +3,13 @@ name: Gource visualization
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "gource.mp4"
+      - ".github/workflows/gource.yml"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "gource.mp4"
   workflow_dispatch:
 
 permissions:
